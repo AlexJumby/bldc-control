@@ -18,7 +18,8 @@ jobs:
         env:
           MATLAB_PREFDIR: ${{ github.workspace }}\.matlab
         run: |
-          matlab -sd $env:GITHUB_WORKSPACE -batch "addpath('src','tools'); try, exit(run_tests), catch e, disp(getReport(e,'extended')), exit(1), end"
+           matlab -batch "addpath(fullfile(getenv('GITHUB_WORKSPACE'),'src')); addpath(fullfile(getenv('GITHUB_WORKSPACE'),'tools')); cd(getenv('GITHUB_WORKSPACE')); try, exit(run_tests), catch e, disp(getReport(e,'extended')), exit(1), end"
+
 
       - name: Upload artifacts (optional)
         if: always()
