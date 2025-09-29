@@ -1,0 +1,30 @@
+﻿name: CI (self-hosted MATLAB Windows)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: [self-hosted, Windows, X64]   # лейблы твоего раннера
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Run MATLAB tests
+        shell: powershell
+        env:
+          MATLAB_PREFDIR: ${{ github.workspace }}\.matlab
+        run: |
+          matlab -sd $env:GITHUB_WORKSPACE -batch "addpath('src','tools'); try, exit(run_tests), catch e, disp(getReport(e,'extended')), exit(1), end"
+
+      - name: Upload artifacts (optional)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-and-coverage
+          path: |
+            test-results/
+            coverage/
